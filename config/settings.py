@@ -151,8 +151,10 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+
 MEDIA_ROOT = join(DJANGO_ROOT, 'media/')
 if not isdir(MEDIA_ROOT):
     raise Exception('MEDIA_ROOT is not a valid path!!! Please check mainSite/settings.py')
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
+
