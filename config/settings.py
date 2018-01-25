@@ -93,8 +93,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': join(DJANGO_ROOT, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'robotrader',
+        'USER': 'robot',
+        'PASSWORD': 'picklerick',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -147,8 +151,10 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+
 MEDIA_ROOT = join(DJANGO_ROOT, 'media/')
 if not isdir(MEDIA_ROOT):
     raise Exception('MEDIA_ROOT is not a valid path!!! Please check mainSite/settings.py')
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
+
