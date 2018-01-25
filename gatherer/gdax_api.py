@@ -20,6 +20,13 @@ import asyncio
 import websockets
 import json
 
+#Server URL
+url = "wss://ws-feed.gdax.com"
+
+#Request send to the websocket server
+subsribe = '{"type":"subscribe","channels":[{"name":"ticker","product_ids":["BTC-EUR"]}]}'
+
+#Temp vars
 oldMinute = ""
 opening = -1
 closing = -1
@@ -27,14 +34,9 @@ volume = 0
 price_list = []
 
 async def gdax_websocket():
-    async with websockets.connect('wss://ws-feed.gdax.com') as websocket:
-        #name = '{"type": "subscribe","product_ids": ["ETH-EUR"],"channels": ["ticker",{"name": "ticker","product_ids": ["ETH-EUR"]}]}'
-        subsribe = '{"type":"subscribe","channels":[{"name":"ticker","product_ids":["BTC-EUR"]}]}'
+    async with websockets.connect(url) as websocket:
         await websocket.send(subsribe)
-        print("> {}".format(subsribe))
-        #print("< {}".format(greeting))
-        #await websocket.send(name2)
-        #print("> {}".format(name2))
+        print("Request : " + subsribe)
         while json.loads(await websocket.recv())["type"] != "subscriptions":
             continue
         print(" Min  | Opening  |   High   |   Low    | Closing  | Volume")
