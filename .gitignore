@@ -1,3 +1,6 @@
+# PRIVATE JSON with confidential information
+gatherer/PRIVATE.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
