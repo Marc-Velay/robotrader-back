@@ -18,6 +18,18 @@ class Forex(models.Model):
     low = models.DecimalField(max_digits=20,decimal_places=10)
     closing =  models.DecimalField(max_digits=20,decimal_places=10)
 
+#GDAX API model
+class Gdax(models.Model):
+    """
+    GDAX API model
+    """
+    timestamp = models.DecimalField(max_digits=20,decimal_places=10)
+    opening = models.DecimalField(max_digits=20,decimal_places=10)
+    high = models.DecimalField(max_digits=20,decimal_places=10)
+    low = models.DecimalField(max_digits=20,decimal_places=10)
+    closing =  models.DecimalField(max_digits=20,decimal_places=10)
+    volume =  models.DecimalField(max_digits=20,decimal_places=10)
+
 # Stock and item model
 class Item(models.Model):
     """

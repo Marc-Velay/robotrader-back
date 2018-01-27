@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+import postgresql_handler as ph
+
 import requests
 import json
 import time
@@ -10,8 +12,8 @@ import dateutil.parser as dp
 url = "https://api.gdax.com/products/BTC-USD/candles?"
 
 #Interesting period
-start = "2015-02-01T00:00:00"
-end = "2018-01-15T00:00:00"
+start = "2018-01-14T23:00:00"#"2015-01-31T23:00:00"
+end = "2018-01-27T23:00:00"
 
 #Granularity and request interval
 gran = 60   #1 / minute
@@ -33,12 +35,14 @@ def handleGap(lastTs, ts, lastC):
         return
     timestamp = lastTs + gran
     while timestamp < ts:
-        t = datetime.datetime.fromtimestamp(timestamp).isoformat()
+        ph.insertRow([timestamp, lastC, lastC, lastC, lastC, 0], False)
         #print(t + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + "0")
         timestamp += gran
 
 
-print(" Time  | Opening  |   High   |   Low    | Closing  | Volume")
+ph.connection()
+
+#print(" Time  | Opening  |   High   |   Low    | Closing  | Volume")
 t1 = start
 lastTimestamp = int(dp.parse(t1).strftime('%s'))
 lastClosing = -1
@@ -47,11 +51,17 @@ while True:
         break
     t2 = getNextTimestamp(t1)
     request = url + "start=" + t1 + "&end=" + t2 + "&granularity=" + str(gran)
-    data = requests.get(request).json()
+    try:
+        res = requests.get(request)
+        data = res.json()
+    except:
+        print("Canno't parse into json...")
+        print(res)
+        continue
     #print("start : "+t1+"\nend   : "+t2)
     print(t1)
     if 'message' in data:   #It often means that we send too much request to gdax api
-        #print(data)
+        print(data)
         #print("start : "+t1+"\nend   : "+t2)
         time.sleep(5)
         continue
@@ -61,7 +71,10 @@ while True:
             handleGap(lastTimestamp, data[i][0], lastClosing)
         lastTimestamp = data[i][0]
         lastClosing = data[i][4]
-        t = datetime.datetime.fromtimestamp(data[i][0]).isoformat()
-        #print(t + "  | " + str(data[i][1]) + "  | " + str(data[i][2]) + "  | " + str(data[i][3]) + "  | " + str(data[i][4]) + "  | " + "{0:.2f}".format(data[i][5]))
+        ph.insertRow(data[i], False)
+        #print(str(data[i][0]) + "  | " + str(data[i][1]) + "  | " + str(data[i][2]) + "  | " + str(data[i][3]) + "  | " + str(data[i][4]) + "  | " + "{0:.2f}".format(data[i][5]))
     t1 = t2
+    ph.commit()
     time.sleep(0.3)
+
+ph.close()

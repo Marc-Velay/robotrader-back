@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 from os import environ, mkdir
 from os.path import abspath, basename, dirname, isdir, join, normpath
 from sys import path
+import json
+
+ids = json.load(open("PRIVATE.json"))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -94,11 +97,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'robotrader',
-        'USER': 'robot',
-        'PASSWORD': 'picklerick',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': ids['dbname'],
+        'USER': ids['user'],
+        'PASSWORD': ids['passwd'],
+        'HOST': ids['host'],
+        'PORT': ids['port'],
     }
 }
 
