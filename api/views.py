@@ -183,7 +183,7 @@ class item_last24(generics.ListCreateAPIView):
         )[:100]
 
 class GDAX_period(generics.ListCreateAPIView):
-    serializer_class = ForexSerializer
+    serializer_class = GdaxSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
