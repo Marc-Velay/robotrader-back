@@ -9,6 +9,13 @@ class ForexSerializer(ModelSerializer):
         model = Forex
         fields = ('id','timestamp', 'opening', 'high', 'low', 'closing')
 
+class GdaxSerializer(ModelSerializer):
+    """Serializer to map the Model instance into JSON format."""
+    
+    class Meta:
+        model = Gdax
+        fields = ('id','timestamp', 'opening', 'high', 'low', 'closing', 'volume')
+
 class ItemSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
 

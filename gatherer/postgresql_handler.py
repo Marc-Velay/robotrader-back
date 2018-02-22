@@ -3,6 +3,8 @@
 import json
 import datetime
 import psycopg2
+import simplejson
+from psycopg2.extras import RealDictCursor
 
 #Load IDs and connect to DB
 def connection():
@@ -14,6 +16,7 @@ def connection():
                                 " host="+ids['host']+
                                 " port="+ids['port']+
                                 " password="+ids['passwd'])
+        print("Connected !")
         return conn
     except:
         print("Unable to connect to the database")
@@ -46,10 +49,22 @@ def close():
         print("Va te faire mettre")
     conn.close()
 
+def query(timestamp1, timestamp2):
+    global conn, cur
+    connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("SELECT * FROM api_gdax WHERE timestamp BETWEEN %s AND %s;", (timestamp1, timestamp2))
+    res = simplejson.dumps(cur.fetchall())
+    close()
+    return res
+    
+
 #test = [datetime.datetime.fromtimestamp(1422748800), 218.67, 218.7, 218.67, 218.7, 0.02]
 #connection()
 #cur = conn.cursor()
 #insertRow(test)
-#cur.execute("SELECT * FROM api_gdax;")
-#print(cur.fetchmany(100))
+#cur.execute("SELECT * FROM api_gdax WHERE timestamp BETWEEN %s AND %s;", timestamp1, timestamp2)
+#print(cur.fetchall())
 #close()
+
+print(query(1422748800, 1522748800))

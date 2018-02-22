@@ -182,6 +182,22 @@ class item_last24(generics.ListCreateAPIView):
             timestamp__gte = date_from
         )[:100]
 
+class GDAX_period(generics.ListCreateAPIView):
+    serializer_class = ForexSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view returns all entries between the 2 timestamps.
+        """
+        timestp1 = self.kwargs['timestp1']
+        timestp2 = self.kwargs['timestp2']
+        return Gdax.objects.exclude(
+            timestamp__gte = timestp2
+        ).filter(
+            timestamp__gte = timestp1
+        )
+
 class UserAddView(generics.CreateAPIView):
 
     #Fetch serializer

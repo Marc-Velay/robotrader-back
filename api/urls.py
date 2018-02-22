@@ -41,6 +41,14 @@ urlpatterns = {
         url(r'^last24/$', item_last24.as_view(), name="Last 24 hours"),
     ])),
 
+    #GDAX data related urls
+    url(r'^GDAX/',include([
+        #url(r'^(?P<year>[0-9]{4})/$', item_year.as_view(), name="year"),
+        #url(r'^(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})/$', item_day.as_view(), name="day"),
+        url(r'^(?P<timestp1>[0-9]{10})/(?P<timestp2>[0-9]{10})/$', GDAX_period.as_view(), name="period"),
+        #url(r'^last24/$', item_last24.as_view(), name="Last 24 hours"),
+    ])),
+
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
