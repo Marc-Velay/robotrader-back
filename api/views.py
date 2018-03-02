@@ -18,7 +18,7 @@ import datetime
 class CreateView(generics.ListCreateAPIView):
 
     # Gives us control over our api
-    queryset = Item.objects.filter(id__lte=100)
+    queryset = Item.objects.filter(id__lte = 100)
     serializer_class = ItemSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -114,10 +114,9 @@ class GetItemsFromPortfolio(generics.RetrieveAPIView):
         portfolio = Portfolio.objects.filter(id = pk,)
         return portfolio
 
-class item_year(generics.ListCreateAPIView):
+class Item_year(generics.ListCreateAPIView):
 
-    #Fetch correct item serializer
-    serializer_class = ForexSerializer
+    serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -125,31 +124,31 @@ class item_year(generics.ListCreateAPIView):
         This view returns all entries for the given year through the URL
         """
         year = self.kwargs['year']
-        return Forex.objects.filter(
+        return Gdax.objects.filter(
             timestamp__year = year
         )[:100]
 
-class item_month(generics.ListCreateAPIView):
+class Item_month(generics.ListCreateAPIView):
 
     #Fetch correct item serializer
-    serializer_class = ForexSerializer
+    serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         """
-        This view returns all entries for the given month for the given item through the URL
+        This view returns all entries for the given month through the URL
         """
         year = self.kwargs['year']
         month = self.kwargs['month']
-        return Forex.objects.filter(
+        return Gdax.objects.filter(
             timestamp__year = year,
             timestamp__month = month
         )[:100]
 
-class item_day(generics.ListCreateAPIView):
+class Item_day(generics.ListCreateAPIView):
 
     #Fetch correct item serializer
-    serializer_class = ForexSerializer
+    serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -159,16 +158,16 @@ class item_day(generics.ListCreateAPIView):
         year = self.kwargs['year']
         month = self.kwargs['month']
         day = self.kwargs['day']
-        return Forex.objects.filter(
+        return Gdax.objects.filter(
             timestamp__year = year,
             timestamp__month = month,
             timestamp__day = day
         )[:100]
 
-class item_last24(generics.ListCreateAPIView):
+class Item_last24(generics.ListCreateAPIView):
 
     #Fetch serializer
-    serializer_class = ForexSerializer
+    serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -177,25 +176,25 @@ class item_last24(generics.ListCreateAPIView):
         """
         item = self.kwargs['item']
         date_from = datetime.datetime.now() - datetime.timedelta(days=1)
-        return Item.objects.filter(
+        return Gdax.objects.filter(
             name = item,
             timestamp__gte = date_from
         )[:100]
 
-class GDAX_period(generics.ListCreateAPIView):
-    serializer_class = GdaxSerializer
+class Item_period(generics.ListCreateAPIView):
+    serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         """
         This view returns all entries between the 2 timestamps.
         """
-        timestp1 = self.kwargs['timestp1']
-        timestp2 = self.kwargs['timestp2']
+        start = self.kwargs['start']
+        end = self.kwargs['end']
         return Gdax.objects.exclude(
-            timestamp__gte = timestp2
+            timestamp__gte = end
         ).filter(
-            timestamp__gte = timestp1
+            timestamp__gte = start
         )
 
 class UserAddView(generics.CreateAPIView):

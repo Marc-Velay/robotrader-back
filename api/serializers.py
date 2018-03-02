@@ -9,7 +9,7 @@ class ForexSerializer(ModelSerializer):
         model = Forex
         fields = ('id','timestamp', 'opening', 'high', 'low', 'closing')
 
-class GdaxSerializer(ModelSerializer):
+class ItemDataSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
     
     class Meta:
@@ -29,7 +29,7 @@ class UserSerializer(ModelSerializer):
     class Meta:
         """Map this serializer to the default django user model."""
         model = User
-        fields = ('first_name','last_name','username', 'password')
+        fields = ('first_name', 'last_name', 'username', 'password')
 
 class PortfolioSerializer(ModelSerializer):
     """Portfolio serializer"""
