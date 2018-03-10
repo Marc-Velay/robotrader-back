@@ -212,7 +212,7 @@ class Item_epoch(generics.ListCreateAPIView):
             timestamp__gte = start
         )
 
-class Item_firstTS(generics.APIView):
+class Item_firstTS(generics.RetrieveAPIView):
     
     serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -223,7 +223,7 @@ class Item_firstTS(generics.APIView):
         """
         return Response(Gdax.objects.all()[0]['timestamp'])
     
-class Item_lastTS(generics.APIView):
+class Item_lastTS(generics.RetrieveAPIView):
     
     serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
