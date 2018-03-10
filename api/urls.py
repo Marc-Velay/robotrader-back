@@ -37,10 +37,10 @@ urlpatterns = {
         url(r'^(?P<year>[0-9]{4})/$', Item_year.as_view(), name="year"),
         url(r'^(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})/$', Item_day.as_view(), name="day"),
         url(r'^(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/$', Item_month.as_view(), name="month"),
-        url(r'^last24/$', Item_last24.as_view(), name="Last 24 hours"),
+        url(r'^last24/$', Item_last24.as_view(), name="last 24 hours"),
         url(r'^(?P<start>[0-9]{10})/(?P<end>[0-9]{10})/$', Item_epoch.as_view(), name="epoch"),
-        url(r'^firstTS/$', Item_firstTS.as_view(), name="first TS"),
-        url(r'^lastTS/$', Item_lastTS.as_view(), name="last TS"),
+        url(r'^firstEntry/$', Item_firstEntry.as_view(), name="first_entry"),
+        url(r'^lastEntry/$', Item_lastEntry.as_view(), name="last_entry"),
     ])),
 
 }
