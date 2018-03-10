@@ -125,8 +125,8 @@ class Item_year(generics.ListCreateAPIView):
         This view returns all entries for the given year through the URL
         """
         year = self.kwargs['year']
-        start = int(time.mktime(datetime.datetime(year, 1, 1, 0, 0, 0).timetuple()))
-        end = int(time.mktime(datetime.datetime(year, 12, 31, 23, 59, 0).timetuple()))
+        start = time.mktime(datetime.datetime(int(year), 1, 1, 0, 0, 0).timetuple())
+        end = time.mktime(datetime.datetime(int(year), 12, 31, 23, 59, 0).timetuple())
         return Gdax.objects.exclude(
             timestamp__gte = end
         ).filter(
