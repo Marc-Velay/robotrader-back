@@ -221,7 +221,7 @@ class Item_firstTS(generics.ListCreateAPIView):
         """
         This view returns the timestamp of the first entry.
         """
-        return Gdax.objects.all()[0]['timestamp']
+        return Gdax.objects.all()[0].timestamp
 
 class Item_lastTS(generics.ListCreateAPIView):
     
@@ -232,7 +232,7 @@ class Item_lastTS(generics.ListCreateAPIView):
         """
         This view returns the timestamp of the last entry.
         """
-        return Gdax.objects.all().last()['timestamp']
+        return Gdax.objects.all().last().timestamp
 
 class UserAddView(generics.CreateAPIView):
 
