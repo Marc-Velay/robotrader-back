@@ -31,14 +31,16 @@ urlpatterns = {
     ])),
 
     #Item management urls
-    url(r'^items/new$', CreateView.as_view(), name="create_item"),
+    url(r'^items/new/$', CreateView.as_view(), name="create_item"),
     url(r'^items/(?P<pk>[0-9]+)/$', DetailsView.as_view(), name="get_item"),
     url(r'^(?P<item>[a-zA-Z0-9]+)/',include([
         url(r'^(?P<year>[0-9]{4})/$', Item_year.as_view(), name="year"),
         url(r'^(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]{2})/$', Item_day.as_view(), name="day"),
         url(r'^(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/$', Item_month.as_view(), name="month"),
         url(r'^last24/$', Item_last24.as_view(), name="Last 24 hours"),
-        url(r'^(?P<start>[0-9]{10})/(?P<end>[0-9]{10})/$', Item_period.as_view(), name="period"),
+        url(r'^(?P<start>[0-9]{10})/(?P<end>[0-9]{10})/$', Item_epoch.as_view(), name="epoch"),
+        url(r'^firstTS/$', Item_firstTS.as_view(), name="first TS"),
+        url(r'^lastTS/$', Item_lastTS.as_view(), name="last TS"),
     ])),
 
 }

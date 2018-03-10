@@ -136,7 +136,6 @@ class Item_year(generics.ListCreateAPIView):
 
 class Item_month(generics.ListCreateAPIView):
 
-    #Fetch correct item serializer
     serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -160,7 +159,6 @@ class Item_month(generics.ListCreateAPIView):
 
 class Item_day(generics.ListCreateAPIView):
 
-    #Fetch correct item serializer
     serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -183,7 +181,6 @@ class Item_day(generics.ListCreateAPIView):
 
 class Item_last24(generics.ListCreateAPIView):
 
-    #Fetch serializer
     serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -198,7 +195,8 @@ class Item_last24(generics.ListCreateAPIView):
             timestamp__gte = date_from
         )[:100]
 
-class Item_period(generics.ListCreateAPIView):
+class Item_epoch(generics.ListCreateAPIView):
+    
     serializer_class = ItemDataSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -213,6 +211,28 @@ class Item_period(generics.ListCreateAPIView):
         ).filter(
             timestamp__gte = start
         )
+
+class Item_firstTS(generics.ListCreateAPIView):
+    
+    serializer_class = ItemDataSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view returns the timestamp of the first entry.
+        """
+        return Gdax.objects.all()[0]['timestamp']
+
+class Item_lastTS(generics.ListCreateAPIView):
+    
+    serializer_class = ItemDataSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view returns the timestamp of the last entry.
+        """
+        return Gdax.objects.all().last()['timestamp']
 
 class UserAddView(generics.CreateAPIView):
 
