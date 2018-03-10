@@ -124,9 +124,10 @@ class Item_year(generics.ListCreateAPIView):
         """
         This view returns all entries for the given year through the URL
         """
-        year = self.kwargs['year']
-        start = time.mktime(datetime.datetime(int(year), 1, 1, 0, 0, 0).timetuple())
-        end = time.mktime(datetime.datetime(int(year), 12, 31, 23, 59, 0).timetuple())
+        year = int(self.kwargs['year'])
+        #Getting timestamps
+        start = time.mktime(datetime.datetime(year, 1, 1, 0, 0, 0).timetuple())
+        end = time.mktime(datetime.datetime(year, 12, 31, 23, 59, 0).timetuple())
         return Gdax.objects.exclude(
             timestamp__gte = end
         ).filter(
@@ -143,12 +144,19 @@ class Item_month(generics.ListCreateAPIView):
         """
         This view returns all entries for the given month through the URL
         """
-        year = self.kwargs['year']
-        month = self.kwargs['month']
-        return Gdax.objects.filter(
-            timestamp__year = year,
-            timestamp__month = month
-        )[:100]
+        year = int(self.kwargs['year'])
+        month = int(self.kwargs['month'])
+        #Getting timestamps
+        start = time.mktime(datetime.datetime(year, month, 1, 0, 0, 0).timetuple())
+        if month == 12:
+            end = time.mktime(datetime.datetime(year, 1, 1, 0, 0, 0).timetuple())
+        else:
+            end = time.mktime(datetime.datetime(year, month+1, 1, 0, 0, 0).timetuple())
+        return Gdax.objects.exclude(
+            timestamp__gte = end
+        ).filter(
+            timestamp__gte = start
+        )
 
 class Item_day(generics.ListCreateAPIView):
 
@@ -160,14 +168,18 @@ class Item_day(generics.ListCreateAPIView):
         """
         This view returns all entries for the given day through the URL
         """
-        year = self.kwargs['year']
-        month = self.kwargs['month']
-        day = self.kwargs['day']
-        return Gdax.objects.filter(
-            timestamp__year = year,
-            timestamp__month = month,
-            timestamp__day = day
-        )[:100]
+        year = int(self.kwargs['year'])
+        month = int(self.kwargs['month'])
+        day = int(self.kwargs['day'])
+        date = datetime.datetime(year, month, day, 0, 0, 0)
+        #Getting timestamps
+        start = time.mktime(date.timetuple())
+        end = time.mktime((date+datetime.timedelta(days=1)).timetuple())
+        return Gdax.objects.exclude(
+            timestamp__gte = end
+        ).filter(
+            timestamp__gte = start
+        )
 
 class Item_last24(generics.ListCreateAPIView):
 
