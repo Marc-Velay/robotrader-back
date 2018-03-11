@@ -1,7 +1,5 @@
 #! /usr/bin/python
 
-import postgresql_handler as ph
-
 import requests
 import json
 import time
@@ -9,25 +7,49 @@ import datetime
 import dateutil.parser as dp
 
 #Server URL
-url = "https://api.gdax.com/products/BTC-USD/candles?"
+url_gdax = "https://api.gdax.com/products/BTC-USD/candles?"
+url = "http://86.64.78.32:30000/api/gdax/"
 
-#Interesting period
-start = "2018-01-14T23:00:00"#"2015-01-31T23:00:00"
-end = "2018-01-27T23:00:00"
+#End timestamp
+end = 1519858800
 
 #Granularity and request interval
 gran = 60   #1 / minute
-interval = 240  #240 mins
+interval = 240  #240 minutes
+
+def getNextTS():
+    global checkTS
+    r = requests.get(url + "lastEntry/", auth=('user', 'picklerick'))
+    checkTS = r.json()['timestamp'] + 60
+    return checkTS
+
+def insertRow(row):
+    global checkTS
+    if row[0] == checkTS:   #Check the timestamp
+        checkTS += 60
+        if checkTS % 86400 == 0:
+            print(row[0])
+        requests.post(url + "2015/",
+                      data = {"item": 2,
+                              "timestamp": row[0],
+                              "opening":   row[1],
+                              "high":      row[2],
+                              "low":       row[3],
+                              "closing":   row[4],
+                              "volume":    round(row[5], 2)},
+                      auth=('user', 'picklerick'))
+    else:
+        print("timestamps don't match : " + str(row[0]) + ", expected : " + str(checkTS))
+        quit()
 
 #Get next time interval (we can't fetch all data in one request)
 def getNextTimestamp(time1):
-    timestamp = int(dp.parse(time1).strftime('%s'))
-    gap = int(dp.parse(end).strftime('%s')) - timestamp
+    gap = end - time1
     if gap >= interval*gran:
-        timestamp += interval*gran
+        time1 += interval*gran
     else:
-        timestamp = int(dp.parse(end).strftime('%s'))
-    return datetime.datetime.fromtimestamp(timestamp).isoformat()
+        time1 = end
+    return time1
 
 #Check if there are no missing value (a missing value appears when nobody trade on gdax on a given minute)
 def handleGap(lastTs, ts, lastC):
@@ -35,22 +57,23 @@ def handleGap(lastTs, ts, lastC):
         return
     timestamp = lastTs + gran
     while timestamp < ts:
-        ph.insertRow([timestamp, lastC, lastC, lastC, lastC, 0], False)
-        #print(t + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + "0")
+        insertRow([timestamp, lastC, lastC, lastC, lastC, 0])
+        #print(str(timestamp) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + str(lastC) + "  | " + "0")
         timestamp += gran
 
-
-ph.connection()
-
-#print(" Time  | Opening  |   High   |   Low    | Closing  | Volume")
-t1 = start
-lastTimestamp = int(dp.parse(t1).strftime('%s'))
+checkTS = getNextTS()
+t1 = checkTS
+lastTimestamp = t1
 lastClosing = -1
 while True:
     if t1 == end:
         break
     t2 = getNextTimestamp(t1)
-    request = url + "start=" + t1 + "&end=" + t2 + "&granularity=" + str(gran)
+    
+    request = url_gdax + "start=" + (datetime.datetime.fromtimestamp(t1) + datetime.timedelta(hours=-2)).isoformat() +\
+                         "&end=" + (datetime.datetime.fromtimestamp(t2) + datetime.timedelta(hours=-2)).isoformat() +\
+                         "&granularity=" + str(gran)
+    #print(request)
     try:
         res = requests.get(request)
         data = res.json()
@@ -59,22 +82,17 @@ while True:
         print(res)
         continue
     #print("start : "+t1+"\nend   : "+t2)
-    print(t1)
     if 'message' in data:   #It often means that we send too much request to gdax api
         print(data)
         #print("start : "+t1+"\nend   : "+t2)
         time.sleep(5)
         continue
-    #print(len(data))
     for i in range(len(data)-1, -1, -1):
         if data[i][0] - lastTimestamp > gran:
             handleGap(lastTimestamp, data[i][0], lastClosing)
         lastTimestamp = data[i][0]
         lastClosing = data[i][4]
-        ph.insertRow(data[i], False)
+        insertRow(data[i])
         #print(str(data[i][0]) + "  | " + str(data[i][1]) + "  | " + str(data[i][2]) + "  | " + str(data[i][3]) + "  | " + str(data[i][4]) + "  | " + "{0:.2f}".format(data[i][5]))
     t1 = t2
-    ph.commit()
     time.sleep(0.3)
-
-ph.close()

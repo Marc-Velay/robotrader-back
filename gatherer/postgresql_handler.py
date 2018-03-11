@@ -27,8 +27,8 @@ def insertRow(data, commitNow):
     global conn, cur
     try:
         cur = conn.cursor()
-        cur.execute("INSERT INTO api_gdax (timestamp, opening, high, low, closing, volume) VALUES (%s, %s, %s, %s, %s, %s);",
-                    (data[0], data[1], data[2], data[3], data[4], data[5]))
+        cur.execute("INSERT INTO api_gdax (item, timestamp, opening, high, low, closing, volume) VALUES (%s, %s, %s, %s, %s, %s, %s);",
+                    (2, data[0], data[1], data[2], data[3], data[4], data[5]))
         if commitNow:
             conn.commit()
     except:
@@ -67,4 +67,4 @@ def query(timestamp1, timestamp2):
 #print(cur.fetchall())
 #close()
 
-print(query(1422748800, 1522748800))
+#print(query(1422748800, 1522748800))
