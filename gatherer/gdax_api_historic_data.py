@@ -8,7 +8,7 @@ import dateutil.parser as dp
 
 #Server URL
 url_gdax = "https://api.gdax.com/products/BTC-USD/candles?"
-url = "http://86.64.78.32:30000/api/gdax/"
+url = "http://localhost:30000/api/gdax/"
 
 #End timestamp
 end = 1519858800
