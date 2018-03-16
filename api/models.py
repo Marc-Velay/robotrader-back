@@ -7,35 +7,12 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.dispatch import receiver
 
-#Portfolio model
-class Forex(models.Model):
-    """
-    Forex model
-    """
-    timestamp = models.DateTimeField()
-    opening = models.DecimalField(max_digits=20,decimal_places=10)
-    high = models.DecimalField(max_digits=20,decimal_places=10)
-    low = models.DecimalField(max_digits=20,decimal_places=10)
-    closing =  models.DecimalField(max_digits=20,decimal_places=10)
-
-#GDAX API model
-class Gdax(models.Model):
-    """
-    GDAX API model
-    """
-    timestamp = models.DecimalField(max_digits=20,decimal_places=10)
-    opening = models.DecimalField(max_digits=20,decimal_places=10)
-    high = models.DecimalField(max_digits=20,decimal_places=10)
-    low = models.DecimalField(max_digits=20,decimal_places=10)
-    closing =  models.DecimalField(max_digits=20,decimal_places=10)
-    volume =  models.DecimalField(max_digits=20,decimal_places=10)
-
 # Stock and item model
 class Item(models.Model):
     """
     All items
     """
-    name = models.CharField(max_length = 30, unique=True)
+    name = models.CharField(max_length = 10)
     source = models.CharField(max_length = 30)
     inst_type = models.CharField(max_length = 30)
 
@@ -43,7 +20,38 @@ class Item(models.Model):
         """Return a human readable representation of the model instance."""
         return "{}".format(self.name)
 
-#Portfolio model
+# Candlesticks model
+class Candles(models.Model):
+    """
+    Candlesticks model
+    """
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=False)
+    timestamp = models.IntegerField()
+    opening = models.DecimalField(max_digits=20,decimal_places=10)
+    high = models.DecimalField(max_digits=20,decimal_places=10)
+    low = models.DecimalField(max_digits=20,decimal_places=10)
+    closing =  models.DecimalField(max_digits=20,decimal_places=10)
+    volume =  models.DecimalField(max_digits=20,decimal_places=10)
+
+# Predictions model
+class Predictions(models.Model):
+    """
+    Predictions model
+    """
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=False)
+    timestamp = models.IntegerField()
+    closing =  models.DecimalField(max_digits=20,decimal_places=10)
+
+# Validations model
+class Validations(models.Model):
+    """
+    Validations model
+    """
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=False)
+    typ = models.CharField(max_length = 30)
+    result = models.CharField(max_length = 30)
+
+# Portfolio model
 class Portfolio(models.Model):
     """
     Portfolio model

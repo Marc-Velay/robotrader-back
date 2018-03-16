@@ -40,7 +40,7 @@ def insertRow(row):
                       auth=('user', 'picklerick'))
     else:
         print("Timestamps don't match : " + str(row[0]) + ", expected : " + str(checkTS))
-        quit()
+        exit()
 
 #Get next time interval (we can't fetch all data in one request)
 def getNextTimestamp(time1):

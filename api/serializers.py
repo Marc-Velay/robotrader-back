@@ -9,26 +9,39 @@ class ForexSerializer(ModelSerializer):
         model = Forex
         fields = ('id','timestamp', 'opening', 'high', 'low', 'closing')
 
-class ItemDataSerializer(ModelSerializer):
+class CandlesSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
     
     class Meta:
-        model = Gdax
-        fields = ('id','timestamp', 'opening', 'high', 'low', 'closing', 'volume')
+        model = Candles
+        fields = ('id', 'item', 'timestamp', 'opening', 'high', 'low', 'closing', 'volume')
 
-class ItemPredictionSerializer(ModelSerializer):
+    def create(self, validated_data):
+        candlestick, created = Candles.objects.get_or_create(
+            item = validated_data['item'],
+            timestamp = validated_data['timestamp'],
+            defaults={
+                opening = validated_data['opening'],
+                high = validated_data['high'],
+                low = validated_data['low'],
+                closing = validated_data['closing'],
+                volume = validated_data['volume']}
+            )
+        return candlestick
+
+class PredictionsSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
 
     class Meta:
-        model = Prediction
+        model = Predictions
         fields = ('id', 'item', 'timestamp', 'closing')
 
-class ItemValidationSerializer(ModelSerializer):
+class ValidationsSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
 
     class Meta:
-        model = Prediction
-        fields = ('id', 'item', 'type', 'result')
+        model = Validations
+        fields = ('id', 'item', 'typ', 'result')
 
 class ItemSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""

@@ -115,34 +115,40 @@ class GetItemsFromPortfolio(generics.RetrieveAPIView):
         portfolio = Portfolio.objects.filter(id = pk,)
         return portfolio
 
-class Item_year(generics.ListCreateAPIView):
+class Item_year(generics.ListAPIView):
 
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns all entries for the given year through the URL
         """
+        item = self.kwargs['item']
         year = int(self.kwargs['year'])
         #Getting timestamps
         start = time.mktime(datetime.datetime(year, 1, 1, 0, 0, 0).timetuple())
-        end = time.mktime(datetime.datetime(year, 12, 31, 23, 59, 0).timetuple())
-        return Gdax.objects.exclude(
+        end = time.mktime(datetime.datetime(year+1, 1, 1, 0, 0, 0).timetuple())
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.exclude(
             timestamp__gte = end
         ).filter(
-            timestamp__gte = start
+            timestamp__gte = start,
+            item = itemQS[0].id
         )
 
-class Item_month(generics.ListCreateAPIView):
+class Item_month(generics.ListAPIView):
 
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns all entries for the given month through the URL
         """
+        item = self.kwargs['item']
         year = int(self.kwargs['year'])
         month = int(self.kwargs['month'])
         #Getting timestamps
@@ -151,134 +157,173 @@ class Item_month(generics.ListCreateAPIView):
             end = time.mktime(datetime.datetime(year, 1, 1, 0, 0, 0).timetuple())
         else:
             end = time.mktime(datetime.datetime(year, month+1, 1, 0, 0, 0).timetuple())
-        return Gdax.objects.exclude(
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.exclude(
             timestamp__gte = end
         ).filter(
-            timestamp__gte = start
+            timestamp__gte = start,
+            item = itemQS[0].id
         )
 
-class Item_day(generics.ListCreateAPIView):
+class Item_day(generics.ListAPIView):
 
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns all entries for the given day through the URL
         """
+        item = self.kwargs['item']
         year = int(self.kwargs['year'])
         month = int(self.kwargs['month'])
         day = int(self.kwargs['day'])
         date = datetime.datetime(year, month, day, 0, 0, 0)
         #Getting timestamps
         start = time.mktime(date.timetuple())
-        end = time.mktime((date+datetime.timedelta(days=1)).timetuple())
-        return Gdax.objects.exclude(
+        end = time.mktime((date + datetime.timedelta(days=1)).timetuple())
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.exclude(
             timestamp__gte = end
         ).filter(
-            timestamp__gte = start
+            timestamp__gte = start,
+            item = itemQS[0].id
         )
 
-class Item_last24(generics.ListCreateAPIView):
+class Item_last24(generics.ListAPIView):
 
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns the last 24 hours of a given item
         """
         item = self.kwargs['item']
-        date_from = datetime.datetime.now() - datetime.timedelta(days=1)
-        return Gdax.objects.filter(
-            name = item,
-            timestamp__gte = date_from
-        )[:100]
+        date_from = time.mktime((datetime.datetime.now() - datetime.timedelta(days=1)).timetuple())
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.filter(
+            timestamp__gte = date_from,
+            item = itemQS[0].id
+        )
 
-class Item_epoch(generics.ListCreateAPIView):
+class Item_epoch(generics.ListAPIView):
     
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns all entries between the 2 timestamps.
         """
+        item = self.kwargs['item']
         start = self.kwargs['start']
         end = self.kwargs['end']
-        return Gdax.objects.exclude(
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.exclude(
             timestamp__gte = end
         ).filter(
-            timestamp__gte = start
+            timestamp__gte = start,
+            item = itemQS[0].id
         )
 
 class Item_firstEntry(generics.RetrieveAPIView):
 
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_object(self):
         """
         This view returns the timestamp of the first entry.
         """
-        return Gdax.objects.all()[0]
+        item = self.kwargs['item']
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.filter(
+            item = itemQS[0].id
+        ).order_by(
+            'timestamp'
+        ).first()
 
 class Item_lastEntry(generics.RetrieveAPIView):
 
-    serializer_class = ItemDataSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_object(self):
         """
         This view returns the timestamp of the last entry.
         """
-        return Gdax.objects.all().last()
+        item = self.kwargs['item']
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.filter(
+            item = itemQS[0].id
+        ).order_by(
+            'timestamp'
+        ).last()
+
+class Item_addData(generics.ListCreateAPIView):
+    
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = (JSONParser,)
 
 class Item_predictions_add(generics.ListCreateAPIView):
 
-    serializer_class = ItemPredictionSerializer
+    serializer_class = PredictionsSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        """
-        This view returns all the predictions made for an item and permit to add news.
-        """
-        item = self.kwargs['item']
-        return Prediction.objects.filter()
+    parser_classes = (JSONParser,)
 
 class Item_predictions_get(generics.ListAPIView):
 
-    serializer_class = ItemPredictionSerializer
+    serializer_class = PredictionsSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns all the predictions made for an item.
         """
         item = self.kwargs['item']
-        return Prediction.objects.filter()
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Prediction.objects.filter(
+            item = itemQS[0].id
+        ).order_by(
+            'timestamp'
+        )
 
 class Item_validations_add(generics.ListCreateAPIView):
 
-    serializer_class = ItemValidationSerializer
+    serializer_class = ValidationsSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        """
-        This view returns all the validation tests made for an item and permit to add news.
-        """
-        item = self.kwargs['item']
-        return Validation.objects.filter()
+    parser_classes = (JSONParser,)
 
 class Item_validations_get(generics.ListAPIView):
 
-    serializer_class = ItemValidationSerializer
+    serializer_class = ValidationsSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         """
         This view returns all the validations made for an item.
         """
         item = self.kwargs['item']
-        return Validation.objects.filter()
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Validation.objects.filter(item = itemQS[0].id)
     
 class UserAddView(generics.CreateAPIView):
 
@@ -313,3 +358,4 @@ class UserDeleteView(generics.DestroyAPIView):
     """View to delete a user instance."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
+

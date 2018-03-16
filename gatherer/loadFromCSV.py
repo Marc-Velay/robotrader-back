@@ -3,7 +3,7 @@
 import csv
 import requests
 from datetime import datetime
-from api.models import *
+#from api.models import *
 
 #Server settings
 item = "apple"
@@ -40,20 +40,21 @@ def insertRowThrowAPI(row):
         quit()
 
 ## Very fast but only from inside
-def insertRow(row):
-    _, created = Candles.objects.get_or_create(
-        item = itemID
-        timestamp = row[0],
-        opening = row[1],
-        high = row[2],
-        low = row[3],
-        closing = row[4],
-        volume = row[5],
-        )
+##def insertRow(row):
+##    _, created = Candles.objects.get_or_create(
+##        item = itemID,
+##        timestamp = row[0],
+##        opening = row[1],
+##        high = row[2],
+##        low = row[3],
+##        closing = row[4],
+##        volume = row[5],
+##        )
 
 
 checkTS = getNextTS()
 reader = []
+offset = 0
 days = 0
 print("### Load and parse CSV ###")
 with open(csvFile, newline='') as csvfile:
@@ -63,11 +64,15 @@ with open(csvFile, newline='') as csvfile:
     for i in range(len(reader)):
         d = datetime.strptime(reader[i][0], '%d.%m.%Y %H:%M:%S.%f')
         reader[i][0] = int(d.timestamp())
-        if reader[i][0] % 86400 == 0:
+        if reader[i][0] % 864000 == 0:
             print(i//60//24, "/", days)
 if checkTS == -1:
     checkTS = reader[0][0]
+else:
+    for i in range(len(reader)):
+        if reader[i][0] == checkTS:
+            offset = i
 print("### Insert data ###")
-for i in range(len(reader)):
+for i in range(offset, len(reader)):
     insertRowThrowAPI(reader[i])
 print("done")

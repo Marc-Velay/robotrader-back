@@ -1,6 +1,9 @@
 # PRIVATE JSON with confidential information
 PRIVATE.json
 
+#Nohup
+nohup.out
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
