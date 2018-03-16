@@ -39,7 +39,7 @@ def insertRow(row):
                               "volume":    round(row[5], 2)},
                       auth=('user', 'picklerick'))
     else:
-        print("timestamps don't match : " + str(row[0]) + ", expected : " + str(checkTS))
+        print("Timestamps don't match : " + str(row[0]) + ", expected : " + str(checkTS))
         quit()
 
 #Get next time interval (we can't fetch all data in one request)

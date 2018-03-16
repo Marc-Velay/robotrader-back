@@ -16,6 +16,20 @@ class ItemDataSerializer(ModelSerializer):
         model = Gdax
         fields = ('id','timestamp', 'opening', 'high', 'low', 'closing', 'volume')
 
+class ItemPredictionSerializer(ModelSerializer):
+    """Serializer to map the Model instance into JSON format."""
+
+    class Meta:
+        model = Prediction
+        fields = ('id', 'item', 'timestamp', 'closing')
+
+class ItemValidationSerializer(ModelSerializer):
+    """Serializer to map the Model instance into JSON format."""
+
+    class Meta:
+        model = Prediction
+        fields = ('id', 'item', 'type', 'result')
+
 class ItemSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
 

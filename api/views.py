@@ -234,6 +234,51 @@ class Item_lastEntry(generics.RetrieveAPIView):
         """
         return Gdax.objects.all().last()
 
+class Item_predictions_add(generics.ListCreateAPIView):
+
+    serializer_class = ItemPredictionSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view returns all the predictions made for an item and permit to add news.
+        """
+        item = self.kwargs['item']
+        return Prediction.objects.filter()
+
+class Item_predictions_get(generics.ListAPIView):
+
+    serializer_class = ItemPredictionSerializer
+
+    def get_queryset(self):
+        """
+        This view returns all the predictions made for an item.
+        """
+        item = self.kwargs['item']
+        return Prediction.objects.filter()
+
+class Item_validations_add(generics.ListCreateAPIView):
+
+    serializer_class = ItemValidationSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view returns all the validation tests made for an item and permit to add news.
+        """
+        item = self.kwargs['item']
+        return Validation.objects.filter()
+
+class Item_validations_get(generics.ListAPIView):
+
+    serializer_class = ItemValidationSerializer
+
+    def get_queryset(self):
+        """
+        This view returns all the validations made for an item.
+        """
+        item = self.kwargs['item']
+        return Validation.objects.filter()
     
 class UserAddView(generics.CreateAPIView):
 
