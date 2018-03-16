@@ -41,6 +41,7 @@ urlpatterns = {
         url(r'^(?P<start>[0-9]{10})/(?P<end>[0-9]{10})/$', Item_epoch.as_view(), name="epoch"),
         url(r'^firstEntry/$', Item_firstEntry.as_view(), name="first_entry"),
         url(r'^lastEntry/$', Item_lastEntry.as_view(), name="last_entry"),
+        #url(r'^predictions/$', Item_predictions.as_view(), name="predictions"),
     ])),
 
 }
