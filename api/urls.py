@@ -44,8 +44,8 @@ urlpatterns = {
         url(r'^addData/$', Item_addData.as_view(), name="add_data"),
         url(r'^predictions/add/$', Item_predictions_add.as_view(), name="predictions"),
         url(r'^predictions/get/$', Item_predictions_get.as_view(), name="predictions"),
-        url(r'^validations/add/$', Item_test_add.as_view(), name="test"),
-        url(r'^validations/get/$', Item_test_get.as_view(), name="test")
+        url(r'^validations/add/$', Item_validations_add.as_view(), name="test"),
+        url(r'^validations/get/$', Item_validations_get.as_view(), name="test")
     ])),
 
 }

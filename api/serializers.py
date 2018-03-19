@@ -1,33 +1,29 @@
 from rest_framework.serializers import *
+from rest_framework_bulk import BulkListSerializer
+from rest_framework_bulk import BulkSerializerMixin
 from api.models import *
 from django.contrib.auth.models import User
 
-class ForexSerializer(ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
-
-    class Meta:
-        model = Forex
-        fields = ('id','timestamp', 'opening', 'high', 'low', 'closing')
-
-class CandlesSerializer(ModelSerializer):
+class CandlesSerializer(BulkSerializerMixin, ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
     
     class Meta:
         model = Candles
         fields = ('id', 'item', 'timestamp', 'opening', 'high', 'low', 'closing', 'volume')
+        list_serializer_class = BulkListSerializer
 
-    def create(self, validated_data):
-        candlestick, created = Candles.objects.get_or_create(
-            item = validated_data['item'],
-            timestamp = validated_data['timestamp'],
-            defaults={
-                opening = validated_data['opening'],
-                high = validated_data['high'],
-                low = validated_data['low'],
-                closing = validated_data['closing'],
-                volume = validated_data['volume']}
-            )
-        return candlestick
+    #def create(self, validated_data):
+    #    candlestick, created = Candles.objects.get_or_create(
+    #        item = validated_data['item'],
+    #        timestamp = validated_data['timestamp'],
+    #        defaults={
+    #            'opening' : validated_data['opening'],
+    #            'high' : validated_data['high'],
+    #            'low' : validated_data['low'],
+    #            'closing' : validated_data['closing'],
+    #            'volume' : validated_data['volume']}
+    #        )
+    #    return candlestick
 
 class PredictionsSerializer(ModelSerializer):
     """Serializer to map the Model instance into JSON format."""

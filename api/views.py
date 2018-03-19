@@ -6,6 +6,8 @@ import csv
 from django.db import connection
 from rest_framework import generics,permissions
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+from rest_framework_bulk import ListBulkCreateAPIView
 from django.contrib.auth.models import User
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -273,17 +275,19 @@ class Item_lastEntry(generics.RetrieveAPIView):
             'timestamp'
         ).last()
 
-class Item_addData(generics.ListCreateAPIView):
+class Item_addData(ListBulkCreateAPIView):
     
     serializer_class = CandlesSerializer
     permission_classes = (permissions.IsAuthenticated,)
     parser_classes = (JSONParser,)
+    queryset = Candles.objects.all()[:10]
 
 class Item_predictions_add(generics.ListCreateAPIView):
 
     serializer_class = PredictionsSerializer
     permission_classes = (permissions.IsAuthenticated,)
     parser_classes = (JSONParser,)
+    queryset = Predictions.objects.all()[:10]
 
 class Item_predictions_get(generics.ListAPIView):
 
@@ -298,7 +302,7 @@ class Item_predictions_get(generics.ListAPIView):
         itemQS = Item.objects.filter(name = item)
         if len(itemQS) == 0:
             return None
-        return Prediction.objects.filter(
+        return Predictions.objects.filter(
             item = itemQS[0].id
         ).order_by(
             'timestamp'
@@ -309,6 +313,7 @@ class Item_validations_add(generics.ListCreateAPIView):
     serializer_class = ValidationsSerializer
     permission_classes = (permissions.IsAuthenticated,)
     parser_classes = (JSONParser,)
+    queryset = Validations.objects.all()[:10]
 
 class Item_validations_get(generics.ListAPIView):
 
@@ -323,7 +328,7 @@ class Item_validations_get(generics.ListAPIView):
         itemQS = Item.objects.filter(name = item)
         if len(itemQS) == 0:
             return None
-        return Validation.objects.filter(item = itemQS[0].id)
+        return Validations.objects.filter(item = itemQS[0].id)
     
 class UserAddView(generics.CreateAPIView):
 
