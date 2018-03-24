@@ -139,6 +139,8 @@ class Item_year(generics.ListAPIView):
         ).filter(
             timestamp__gte = start,
             item = itemQS[0].id
+        ).order_by(
+            "timestamp"
         )
 
 class Item_month(generics.ListAPIView):
@@ -167,6 +169,8 @@ class Item_month(generics.ListAPIView):
         ).filter(
             timestamp__gte = start,
             item = itemQS[0].id
+        ).order_by(
+            "timestamp"
         )
 
 class Item_day(generics.ListAPIView):
@@ -194,6 +198,8 @@ class Item_day(generics.ListAPIView):
         ).filter(
             timestamp__gte = start,
             item = itemQS[0].id
+        ).order_by(
+            "timestamp"
         )
 
 class Item_last24(generics.ListAPIView):
@@ -213,6 +219,8 @@ class Item_last24(generics.ListAPIView):
         return Candles.objects.filter(
             timestamp__gte = date_from,
             item = itemQS[0].id
+        ).order_by(
+            "timestamp"
         )
 
 class Item_epoch(generics.ListAPIView):
@@ -235,6 +243,27 @@ class Item_epoch(generics.ListAPIView):
         ).filter(
             timestamp__gte = start,
             item = itemQS[0].id
+        ).order_by(
+            "timestamp"
+        )
+
+class Item_all(generics.ListAPIView):
+
+    serializer_class = CandlesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        """
+        This view returns all entries between the 2 timestamps.
+        """
+        item = self.kwargs['item']
+        itemQS = Item.objects.filter(name = item)
+        if len(itemQS) == 0:
+            return None
+        return Candles.objects.filter(
+            item = itemQS[0].id
+        ).order_by(
+            "timestamp"
         )
 
 class Item_firstEntry(generics.RetrieveAPIView):
@@ -328,7 +357,11 @@ class Item_validations_get(generics.ListAPIView):
         itemQS = Item.objects.filter(name = item)
         if len(itemQS) == 0:
             return None
-        return Validations.objects.filter(item = itemQS[0].id)
+        return Validations.objects.filter(
+            item = itemQS[0].id
+        ).order_by(
+            'timestamp'
+        )
     
 class UserAddView(generics.CreateAPIView):
 
