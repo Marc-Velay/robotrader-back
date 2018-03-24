@@ -48,8 +48,11 @@ class Validations(models.Model):
     Validations model
     """
     item = models.ForeignKey(Item, on_delete=models.CASCADE, null=False)
-    typ = models.CharField(max_length = 30)
-    result = models.CharField(max_length = 30)
+    algorithm = models.CharField(max_length = 30)
+    timestamp = models.IntegerField(default=-1)
+    accuracy = models.DecimalField(max_digits=20,decimal_places=10,default='-1.0000000000')
+    timetotrain = models.DecimalField(max_digits=20,decimal_places=10,default='-1.0000000000')
+    adaptability = models.DecimalField(max_digits=20,decimal_places=10,default='-1.0000000000')
 
 # Portfolio model
 class Portfolio(models.Model):
