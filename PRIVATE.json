@@ -1,0 +1,7 @@
+{
+	"dbname": "robotrader",
+	"user": "robot",
+	"passwd": "picklerick",
+	"host": "localhost",
+	"port": "5432"
+}
